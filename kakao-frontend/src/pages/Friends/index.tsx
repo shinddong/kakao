@@ -7,31 +7,47 @@ import {
   ListItemText,
   TextField,
   Grid,
-  Box,
 } from "@mui/material";
+import { Box } from "@mui/system";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ImageIcon from "@mui/icons-material/Image";
 import IconButton from "@mui/material/IconButton";
 import Modal from "@mui/material/Modal";
 import { friends } from "./data";
-import { useState, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import FriendAdd from "./components/FriendAdd";
-
+import axios from "axios";
+type FriendType = {
+  id: number;
+  name: string;
+  statusMessage: string;
+};
 const Friends = (): JSX.Element => {
-  const [friendList, setFriendList] = useState(friends);
+  const [OriginalData, setOriginalData] = useState<FriendType[]>([]);
+  const [friendList, setFriendList] = useState<FriendType[]>([]);
   const [open, setOpen] = useState(false);
+
   const changeSearchText = (event: ChangeEvent<HTMLInputElement>) => {
     const inputText = event.currentTarget.value;
     if (inputText.length === 0) {
       setFriendList(friends);
     } else {
-      const filteredFriends = friends.filter((friend) =>
+      const filteredFriends = OriginalData.filter((friend) =>
         friend.name.includes(inputText)
       );
       setFriendList(filteredFriends);
     }
   };
-
+  const getOriginalData = async () => {
+    const { data } = await axios.get<FriendType[]>(
+      "http://localhost:5000/friends/4"
+    );
+    setOriginalData(data);
+    setFriendList(data);
+  };
+  useEffect(() => {
+    getOriginalData();
+  }, []);
   const handleOpen = () => {
     setOpen(true);
   };
