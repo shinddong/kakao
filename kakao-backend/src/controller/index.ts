@@ -1,7 +1,7 @@
 import express from "express";
-import schoolController from "./school.controller";
-
+import UserController from "./user.controller";
+import friendController from "./friend.controller";
 const router = express.Router();
-router.use("/schools", schoolController); // /schools/ 이 구존데, 라우터 거치면서 /schools 지워지고 남은거 /하나.
-
+router.use("/users", UserController);
+router.use("/friends", friendController);
 export default router;

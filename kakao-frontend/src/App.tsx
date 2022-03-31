@@ -11,9 +11,10 @@ const App = (): JSX.Element => {
   const changeTab = (changedValue: string) => {
     setCurrentTab(changedValue);
   };
+
   return (
     <section>
-      <Box>{currentTab === "friends" && <Friends />}</Box>
+      <Box sx={{ pb: 7 }}>{currentTab === "friends" && <Friends />}</Box>
       <Paper
         sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
         elevation={3}
