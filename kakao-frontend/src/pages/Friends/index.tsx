@@ -26,19 +26,20 @@ type FriendType = {
   statusMessage: string;
 };
 const Friends = (): JSX.Element => {
-  const [OriginalData, setOriginalData] = useState<FriendType[]>([]);
+  const [friendList, setFriendList] = useState<FriendType[]>([]);
+  const [OriginalFriends, setOriginalFriends] = useState<FriendType[]>([]);
   const [open, setOpen] = useState(false);
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
 
   const changeSearchText = (event: ChangeEvent<HTMLInputElement>) => {
     const inputText = event.currentTarget.value;
     if (inputText.length === 0) {
-      setOriginalData(friends);
+      setFriendList(friends);
     } else {
-      const filteredFriends = OriginalData.filter((friend) =>
+      const filteredFriends = OriginalFriends.filter((friend) =>
         friend.name.includes(inputText)
       );
-      setOriginalData(filteredFriends);
+      setFriendList(filteredFriends);
     }
   };
 
@@ -46,7 +47,8 @@ const Friends = (): JSX.Element => {
     const { data } = await axios.get<FriendType[]>(
       "http://localhost:5000/friends/1"
     );
-    setOriginalData(data);
+    setOriginalFriends(data);
+    setFriendList(data);
   };
 
   const OpenModal = () => {
@@ -103,7 +105,7 @@ const Friends = (): JSX.Element => {
         </Grid>
       </Grid>
       <List>
-        {OriginalData.map((friend) => {
+        {friendList.map((friend) => {
           return (
             <ListItemButton key={friend.id} onClick={openMenu}>
               <ListItemAvatar>
