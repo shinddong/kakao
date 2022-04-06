@@ -20,12 +20,17 @@ type SearchResultType = {
   name: string;
   statusMessage: string;
 };
-const FriendAdd = (): JSX.Element => {
+type FriendAddType = {
+  callback: () => void;
+};
+const FriendAdd = (props: FriendAddType): JSX.Element => {
+  const { callback } = props;
   const [phone, setPhone] = useState("");
   const [user, setUser] = useState<SearchResultType>();
   const updatePhone = (event: ChangeEvent<HTMLInputElement>) => {
     setPhone(event.currentTarget.value);
   };
+
   const searchUser = async () => {
     const { data } = await axios.get<SearchResultType>(
       "http://localhost:5000/friends/search",
@@ -36,6 +41,22 @@ const FriendAdd = (): JSX.Element => {
       }
     );
     setUser(data);
+  };
+  const registerUser = async () => {
+    try {
+      await axios.post("http://localhost:5000/friends", {
+        userId: 1,
+        phone,
+      });
+      await callback();
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        const { data } = e.response;
+        if (data) {
+          alert(data.message);
+        }
+      }
+    }
   };
 
   return (
@@ -60,7 +81,7 @@ const FriendAdd = (): JSX.Element => {
           {user && (
             <ListItem
               secondaryAction={
-                <IconButton>
+                <IconButton onClick={registerUser}>
                   <PersonAddIcon />
                 </IconButton>
               }

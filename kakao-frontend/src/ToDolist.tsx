@@ -30,7 +30,6 @@ const ToDoList = (): JSX.Element /*리턴타입. 컴포넌트라는 뜻*/ => {
   useEffect(() => {
     getToDoList();
   }, []);
-
   return (
     <section>
       <section>
