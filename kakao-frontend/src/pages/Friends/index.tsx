@@ -30,11 +30,10 @@ const Friends = (): JSX.Element => {
   const [OriginalFriends, setOriginalFriends] = useState<FriendType[]>([]);
   const [open, setOpen] = useState(false);
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
-
   const changeSearchText = (event: ChangeEvent<HTMLInputElement>) => {
     const inputText = event.currentTarget.value;
     if (inputText.length === 0) {
-      setFriendList(friends);
+      setFriendList(OriginalFriends);
     } else {
       const filteredFriends = OriginalFriends.filter((friend) =>
         friend.name.includes(inputText)
