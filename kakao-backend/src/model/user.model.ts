@@ -8,6 +8,7 @@ import {
   AutoIncrement,
   HasMany,
 } from "sequelize-typescript";
+import Chat from "./chat.model";
 import Friend from "./friend.model";
 
 @Table
@@ -29,4 +30,7 @@ export default class User extends Model {
 
   @HasMany(() => Friend)
   MyFriends: User[];
+
+  @HasMany(() => Chat)
+  chats: Chat[];
 }
