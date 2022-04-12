@@ -6,8 +6,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useState } from "react";
+import { messages } from "../data";
 
 const ChatDetail = (): JSX.Element => {
+  const [ChatMessages, setChatMessages] = useState(messages);
   return (
     <Box
       sx={{
@@ -25,67 +28,79 @@ const ChatDetail = (): JSX.Element => {
           height: "calc(100vh - 160px)",
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            pl: "5px",
-            pr: "5px",
-          }}
-        >
-          <Box>
-            <Typography variant="caption">2022-04-01 18:00:00</Typography>
-            <Paper
-              elevation={1}
-              sx={{
-                display: "inline-block",
-                padding: "10px",
-                maxWidth: "60%",
-                backgroundColor: "#fff712",
-                borderRadius: "20px",
-              }}
-            >
-              <Typography variant="body2">
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: "헬로asfasf<br />ㄴㅇㄴㄹ",
+        {ChatMessages.map((message) => {
+          return (
+            <>
+              {message.isMe ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    pl: "5px",
+                    pr: "5px",
                   }}
-                ></span>
-              </Typography>
-            </Paper>
-          </Box>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            justufyContend: "flex-start",
-            pl: "5px",
-            pr: "5px",
-          }}
-        >
-          <Box>
-            <Paper
-              elevation={1}
-              sx={{
-                display: "inline-block",
-                padding: "10px",
-                maxWidth: "60%",
-                backgroundColor: "#e8e8e8",
-                borderRadius: "20px",
-              }}
-            >
-              <Typography variant="body2">
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: "헬로asfasf<br />ㄴㅇㄴㄹ",
+                >
+                  <Box>
+                    <Typography variant="caption">
+                      {message.time.toLocaleString()}
+                    </Typography>
+                    <Paper
+                      elevation={1}
+                      sx={{
+                        display: "inline-block",
+                        padding: "10px",
+                        maxWidth: "60%",
+                        backgroundColor: "#fff712",
+                        borderRadius: "20px",
+                      }}
+                    >
+                      <Typography variant="body2">
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html: message.message,
+                          }}
+                        ></span>
+                      </Typography>
+                    </Paper>
+                  </Box>
+                </Box>
+              ) : (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justufyContend: "flex-start",
+                    pl: "5px",
+                    pr: "5px",
                   }}
-                ></span>
-              </Typography>
-            </Paper>
-            <Typography variant="caption">2022-04-01 18:00:00</Typography>
-          </Box>
-        </Box>
+                >
+                  <Box>
+                    <Paper
+                      elevation={1}
+                      sx={{
+                        display: "inline-block",
+                        padding: "10px",
+                        maxWidth: "60%",
+                        backgroundColor: "#e8e8e8",
+                        borderRadius: "20px",
+                      }}
+                    >
+                      <Typography variant="body2">
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html: message.message,
+                          }}
+                        ></span>
+                      </Typography>
+                    </Paper>
+                    <Typography variant="caption">
+                      {message.time.toLocaleString()}
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+            </>
+          );
+        })}
       </Stack>
       <Box
         sx={{

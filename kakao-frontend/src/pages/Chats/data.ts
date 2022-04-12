@@ -5,6 +5,43 @@ type ChatType = {
   count?: number;
   date: Date;
 };
+type ChatMesssageType = {
+  time: Date;
+  message: string;
+  isMe: boolean;
+};
+export const messages: ChatMesssageType[] = [
+  {
+    time: new Date(),
+    message: "머해",
+    isMe: false,
+  },
+  {
+    time: new Date(),
+    message: "집",
+    isMe: true,
+  },
+  {
+    time: new Date(),
+    message: "밥먹자",
+    isMe: true,
+  },
+  {
+    time: new Date(),
+    message: "ㅇㅋ",
+    isMe: false,
+  },
+  {
+    time: new Date(),
+    message: "5분 이따 감",
+    isMe: false,
+  },
+  {
+    time: new Date(),
+    message: "오키",
+    isMe: true,
+  },
+];
 export const chats: ChatType[] = [
   {
     id: 1,
