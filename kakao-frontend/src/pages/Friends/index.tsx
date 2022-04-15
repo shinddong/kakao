@@ -7,15 +7,15 @@ import {
   ListItemText,
   TextField,
   Grid,
+  IconButton,
+  Menu,
+  MenuItem,
+  Modal,
 } from "@mui/material";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import { Box } from "@mui/system";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ImageIcon from "@mui/icons-material/Image";
-import IconButton from "@mui/material/IconButton";
-import Modal from "@mui/material/Modal";
-import { friends } from "./data";
+
 import { useState, useEffect, ChangeEvent, MouseEvent } from "react";
 import FriendAdd from "./components/FriendAdd";
 import axios from "axios";
@@ -25,11 +25,19 @@ type FriendType = {
   name: string;
   statusMessage: string;
 };
-const Friends = (): JSX.Element => {
-  const [friendList, setFriendList] = useState<FriendType[]>([]);
+type ChatType = {
+  chatId: number;
+};
+type FriendTabType = {
+  changeTab: (chatId: number) => void;
+};
+const Friends = (props: FriendTabType): JSX.Element => {
+  const { changeTab } = props;
   const [OriginalFriends, setOriginalFriends] = useState<FriendType[]>([]);
+  const [friendList, setFriendList] = useState<FriendType[]>([]);
   const [open, setOpen] = useState(false);
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+  const [friend, setFriend] = useState<number | null>(null);
   const changeSearchText = (event: ChangeEvent<HTMLInputElement>) => {
     const inputText = event.currentTarget.value;
     if (inputText.length === 0) {
@@ -41,7 +49,12 @@ const Friends = (): JSX.Element => {
       setFriendList(filteredFriends);
     }
   };
-
+  const OpenModal = () => {
+    setOpen(true);
+  };
+  const closeModal = () => {
+    setOpen(false);
+  };
   const getFriendList = async () => {
     const { data } = await axios.get<FriendType[]>(
       "http://localhost:5000/friends/1"
@@ -50,22 +63,28 @@ const Friends = (): JSX.Element => {
     setFriendList(data);
   };
 
-  const OpenModal = () => {
-    setOpen(true);
-  };
-  const closeModal = () => {
-    setOpen(false);
-  };
   const finishAddFriend = async () => {
     await getFriendList();
     closeModal();
   };
-  const openMenu = (event: MouseEvent<HTMLDivElement>) => {
+  const openMenu = (event: MouseEvent<HTMLDivElement>, friendId: number) => {
     setAnchor(event.currentTarget);
+    setFriend(friendId);
   };
   const closeMenu = () => {
     setAnchor(null);
+    setFriend(null);
   };
+  const makeChat = async () => {
+    const { data } = await axios.post<ChatType>("http://localhost:5000/chats", {
+      userId: 1,
+      friendId: friend,
+    });
+    const { chatId } = data;
+    changeTab(chatId);
+    closeMenu();
+  };
+
   useEffect(() => {
     getFriendList();
   }, []);
@@ -83,7 +102,7 @@ const Friends = (): JSX.Element => {
           horizontal: "center",
         }}
       >
-        <MenuItem>채팅하기</MenuItem>
+        <MenuItem onClick={makeChat}>채팅하기</MenuItem>
       </Menu>
       <Grid container>
         <Grid item xs={10.5}>
@@ -106,7 +125,10 @@ const Friends = (): JSX.Element => {
       <List>
         {friendList.map((friend) => {
           return (
-            <ListItemButton key={friend.id} onClick={openMenu}>
+            <ListItemButton
+              key={friend.id}
+              onClick={(event) => openMenu(event, friend.id)}
+            >
               <ListItemAvatar>
                 <Avatar>
                   <ImageIcon />

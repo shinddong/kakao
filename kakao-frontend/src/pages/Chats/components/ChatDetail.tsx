@@ -6,11 +6,83 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
-import { messages } from "../data";
+import { WebSocketContext } from "../../../config/WebSocketProvider";
+import { useState, useEffect, useContext, ChangeEvent } from "react";
+import axios from "axios";
 
-const ChatDetail = (): JSX.Element => {
-  const [ChatMessages, setChatMessages] = useState(messages);
+type ChatMessageType = {
+  id: number;
+  time: Date;
+  message: string;
+  isMe: boolean;
+};
+type ChatDetailType = {
+  chatId: number;
+};
+type ReceiveMessageType = {
+  chatId: number;
+  senderId: number;
+  id: number;
+  message: string;
+  isRead: boolean;
+  time: Date;
+};
+const ChatDetail = (props: ChatDetailType): JSX.Element => {
+  const { chatId } = props;
+  const [chatMessages, setChatMessages] = useState<ChatMessageType[]>([]);
+  const [message, setMessage] = useState("");
+  const [newMessage, setNewMessage] = useState<ChatMessageType>();
+  const ws = useContext(WebSocketContext);
+  const changeMessage = (event: ChangeEvent<HTMLInputElement>) => {
+    const inputText = event.currentTarget.value;
+    setMessage(inputText);
+  };
+  const sendMessage = () => {
+    console.log(ws.current);
+    ws.current.emit("sendMessage", {
+      chatId,
+      senderId: 1,
+      message,
+    });
+  };
+  const loadMessage = async () => {
+    const { data } = await axios.get<ChatMessageType[]>(
+      `http://localhost:5000/chats/${chatId}/messages`,
+      {
+        params: {
+          userId: 1,
+        },
+      }
+    );
+    setChatMessages(data);
+  };
+
+  const receiveMessage = (received: ReceiveMessageType) => {
+    const { id, time, message, senderId } = received;
+    const isMe = senderId === 1;
+    const chatMessage: ChatMessageType = {
+      id,
+      isMe,
+      message,
+      time,
+    };
+
+    setNewMessage(chatMessage);
+  };
+  useEffect(() => {
+    loadMessage();
+    ws.current.emit("joinRoom", { chatId });
+    ws.current.on("receiveMessage", (data: ReceiveMessageType) => {
+      receiveMessage(data);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (newMessage) {
+      setChatMessages([...chatMessages, newMessage]);
+    }
+  }, [newMessage]);
+
   return (
     <Box
       sx={{
@@ -28,7 +100,7 @@ const ChatDetail = (): JSX.Element => {
           height: "calc(100vh - 160px)",
         }}
       >
-        {ChatMessages.map((message) => {
+        {chatMessages.map((message) => {
           return (
             <>
               {message.isMe ? (
@@ -114,10 +186,15 @@ const ChatDetail = (): JSX.Element => {
         }}
       >
         <Box sx={{ width: "85%" }}>
-          <TextField fullWidth />
+          <TextField fullWidth onChange={changeMessage} />
         </Box>
         <Box sx={{ width: "15 %", p: 1 }}>
-          <Button variant="contained" color="primary" fullWidth>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={sendMessage}
+          >
             전송
           </Button>
         </Box>
