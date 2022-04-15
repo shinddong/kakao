@@ -31,5 +31,5 @@ export default class Chat extends Model {
   friend: User;
 
   @HasMany(() => Message, "chatId")
-  message: Message[];
+  messages: Message[];
 }
